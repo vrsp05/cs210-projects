@@ -21,6 +21,7 @@ public class Journal
 {entry}";
         // This returns the formatted string
         return formattedEntry;
+        
     } // End of CombineEntry function
 
     // This is the method that saves the entries
@@ -28,6 +29,7 @@ public class Journal
     {   
         // This method calls the WriteTxt that writes the the file with the entries
         WriteTxt(fileName, entriesList);
+
     } // End of Save function
 
     // This is the load function, it loads the a txt file after putting the name
@@ -35,6 +37,7 @@ public class Journal
     {   
         // This reads the txt file and stores each line in the array called lines
         string[] lines = System.IO.File.ReadAllLines(fileName);
+
         // This iterates through each index in the array
         foreach (string line in lines)
         {   
@@ -53,11 +56,13 @@ public class Journal
             // This writes the welcome message
             outputFile.WriteLine("Welcome to your journal.");
             outputFile.WriteLine();
+
             // This will write each clean entry
             foreach (string entry in entriesList)
             {   
                 // This displays each clean entry
                 outputFile.WriteLine(entry);
+
             } // End of foreach
 
         } // End of using
@@ -72,6 +77,7 @@ public class Journal
         {   
             //This displays the list
             Console.WriteLine(Entry);
+
         } // End of foreach
 
     } // End of DisplayEntries function
@@ -84,7 +90,9 @@ public class Journal
         {   
             // This tells the user that the password is incorrect
             Console.WriteLine("Incorrect password. Exiting...");
+
             Environment.Exit(0); // Close the program if password is wrong
+
         }// End of if statement
     } // End of PasswordCheck function
 

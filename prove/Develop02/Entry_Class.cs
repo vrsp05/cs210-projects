@@ -19,27 +19,36 @@ public class Entry
     //{}
 
     // This function reads and returns the input
-    public string GetInput(){
+    public string GetInput()
+    {
         //This reads the value
         string userInput = Console.ReadLine();
+
         // This returns the value
         return userInput;
+
     } // End of GetInput function
 
     // This function randomly selects a value from the _prompList
     public string RandomizePrompt()
-    {   // Calling the Random class
+    {   
+        // Calling the Random class
         Random randomNumber = new Random();
+
         // Selecting a random index from the list
         int index = randomNumber.Next(_promptList.Count);
+
         // Returning the prompt base on the random index selected
         return _promptList[index];
+
     } // End of RandomizePrompt
 
     // This function gets the current date for our journal
     public string GetDate()
-    {   // This returns the current date
+    {   
+        // This returns the current date
         return DateTime.Now.ToString("MM/dd/yyyy");
+        
     } // End of GetDate function
 
 } // End of Entry Class

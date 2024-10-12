@@ -31,7 +31,7 @@ class Program
             // This prints an extra line 
             Console.WriteLine();
 
-            // This displays the menu of hte program
+            // This displays the menu of the program
             Console.Write(@"Please select one of the following choices:
 1- Write an journal entry.
 2- Display your journal entries.
@@ -42,6 +42,7 @@ What would you like to do? ");
 
             //This reads the input from the menu
             entryActions._menuInput = entryActions.GetInput();
+            
             // Extra line that separates
             Console.WriteLine();
 
