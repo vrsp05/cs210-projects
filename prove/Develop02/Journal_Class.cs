@@ -38,6 +38,9 @@ public class Journal
         // This reads the txt file and stores each line in the array called lines
         string[] lines = System.IO.File.ReadAllLines(fileName);
 
+        // This clears the previous created entries whe loading
+        _totalEntries.Clear();
+
         // This iterates through each index in the array
         foreach (string line in lines)
         {   
