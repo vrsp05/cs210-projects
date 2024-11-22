@@ -1,0 +1,5 @@
+UserLVL:1
+UserSavedPoints:850
+SimpleGoal:Give a talk,Speak in sacrament when asked,100,True
+EternalGoal:Read the scriptures,Read for at least 10 minutes,50
+ChecklistGoal:Attend the temple,Attend and perform ordinances,50,500,3,3
