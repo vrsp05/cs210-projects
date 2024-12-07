@@ -1,0 +1,15 @@
+Here are your current saved items:
+
+    __________________________________________________
+    1. Code: D-2594 |Name: espaguetis |Status: Good
+    Type: pasta |Expiration: 12/24/2030 |Price: 0.98
+    Quantity: 9 |Location: dry |Date Added: 12/07/2024
+    __________________________________________________
+
+    __________________________________________________
+    2. Code: F-7379 |Name: pollo |Status: Good
+    Type: carne |Expiration: 12/12/2024 |Price: 10.03
+    Quantity: 4 |Location: freezer |Date Added: 12/07/2024
+    __________________________________________________
+
+End of the file.
