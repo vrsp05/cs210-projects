@@ -1,17 +1,23 @@
 // This class will handle the most of the actions performed by the user in the menu
+using System.ComponentModel.Design;
 using System.Net;
 using System.Reflection.Metadata.Ecma335;
 
 class UserInterface
 {
     // Attributes
-    private bool _isRunning;
-    // This creates an instance for the FoodStorageManager class
-    FoodStorageManager _fsms = new FoodStorageManager();
-    // This creates an instances for the DryItems and FreezerItems classes from the FoodItem class
-    FoodItems _dryItems = new DryItems();
-    // This variable help in checking if the info was already loaded
+    // This variable helps in checking if the info was already loaded
     private bool _isLoaded;
+    // This creates an instance for the FoodStorageManager class
+    private FoodStorageManager _fsms = new FoodStorageManager();
+    // This creates an instances for the DryItems and FreezerItems classes from the FoodItem class
+    private FoodItems _FoodItems = new DryItems();
+    // This creates an instance for the CheckExpiration class
+    private ExpirationChecker _statusChecker = new ExpirationChecker();
+    // This creates an instance for the EmailService class
+    private EmailService _emailService = new EmailService("vrsppalilo@gmail.com", "babz jdgk yihw ejxx");
+    // this creates an instance for the InputValidator class
+    private InputValidator _validator = new InputValidator();
 
     // Constructors
     public UserInterface()
@@ -22,11 +28,8 @@ class UserInterface
     // Behaviors
     
     // This method displays the menu to the user
-    public void DisplayMenu(string fileName)
+    public void DisplayMenu()
     {   
-        // This calls the method that helps automatically loading all data
-        LoadingSequence(fileName);
-
         // This prints the menu
         Console.Write(@"
 Welcome to the Food Storage Management System (FSMS)
@@ -38,7 +41,7 @@ Here are your FSMS options:
  3- View my items
  4- Save my list
  5- Quit program
-Please select from the menu: ");
+Please select from the menu (1-5): ");
 
     } // End of DisplayMenu method
 
@@ -59,57 +62,98 @@ Please select from the menu: ");
         // If #1: If the user selects to add an item
         if (input == "1")
         {   
+            // This creates the variables that will be used
+            string name;
+            string type;
+            string expirationDate;
+            float price;
+            int quantity;
+            string location;
+
             // This starts the questionnaire to help create the new item
             Console.WriteLine();
             Console.WriteLine("Please answer the following questions:");
 
-            // This is the questionnaire to build the new item, conversion is done in the respective lines
-            Console.Write("What is the name of the item? ");
-            string name = MenuInput();
+            // Bool varialbe that will assist in validating all inputs
+            bool isValid = false;
 
-            Console.Write("What is the type of the item (meat, vegetable, bread or rice)? ");
-            string type = MenuInput();
+            // While loop that runs until all questions have been answered properly
+            while (isValid == false)
+            {   
+                // Try to help catching other errors
+                try
+                {
+                    // This is the questionnaire to build the new item, conversion is done in the respective lines
 
-            Console.Write("What is the expiration date of the item (MM/dd/yyyy)? ");
-            string expirationDate = MenuInput();
+                    // This asks the name of the item, reads and assigns the input into a variable
+                    Console.Write("What is the name of the item? ");
+                    name = _validator.ValidateNonBlankInput(MenuInput()); // Input validation happens here
 
-            Console.Write("What is the price of the item? ");
-            float price = float.Parse(MenuInput()); // Conversion from string to float
+                    // This asks the type of the item, reads and assigns the input into a variable
+                    Console.Write("What is the type of the item (meat, vegetable, bread, rice, etc.)? ");
+                    type = _validator.ValidateNonBlankInput(MenuInput()); // Input validation happens here
+                    
+                    // This asks the expiration date of the item, reads and assigns the input into a variable
+                    Console.Write("What is the expiration date of the item (MM/dd/yyyy)? ");
+                    expirationDate = _validator.ValidateDate(MenuInput()); // Input validation happens here
 
-            Console.Write("How many items are you adding to storage? ");
-            int quantity = int.Parse(MenuInput()); // Conversion from string to int
+                    // This asks the price of the item, reads and assigns the input into a variable
+                    Console.Write("What is the price of the item (decimal, whole number)? ");
+                    price = float.Parse(_validator.ValidateNumberInput(MenuInput())); // Conversion from string to float and Input validation happens here
 
-            Console.Write("What is the storage location for the itme (freezer or dry)? ");
-            string location = MenuInput();
+                    // This asks the quantity of items added, reads and assigns the input into a variable
+                    Console.Write("How many items are you adding to storage (integer)? ");
+                    quantity = int.Parse(_validator.ValidateNumberInput(MenuInput())); // Conversion from string to int and Input validation happens here
 
-            // This helps in deciding which type of code is needed
-            string code = _fsms.CodeTypeDecider(location);
+                    // This asks the storage location of the item, reads and assigns the input into a variable
+                    Console.Write("What is the storage location for the item ('freezer' or 'dry')? ");
+                    location = _validator.ValidateNonBlankInput(MenuInput()); // Input validation happens here
+                    location = _validator.ValidateLocation(location); // Input validation happens here
 
-            // This builds the item's information
-            string foodItem = _dryItems.BuildFoodItem(name, type, expirationDate, price, quantity, location, code);
+                    // This helps in deciding which type of code is needed and generates the code
+                    string code = _fsms.CodeTypeDecider(location);
 
-            // This is a adding message
-            Console.WriteLine("Adding... ");
+                    // This builds the item's information
+                    string foodItem = _FoodItems.BuildFoodItem(name, type, expirationDate, price, quantity, location, code);
 
-            // Quick animation to close this adding session
-            LoadingAnimation();
+                    // This is a adding message
+                    Console.WriteLine("Adding... ");
 
-            // This adds the item into the list
-            _fsms.AddFoodItem(foodItem);
+                    // Quick animation to close this adding session
+                    LoadingAnimation();
 
-            // This tells the user the item was added
-            Console.WriteLine();
-            Console.WriteLine($"The food item '{name}' was added successfully.");
-            Console.WriteLine();
+                    // This adds the item into the list
+                    _fsms.AddFoodItem(foodItem);
 
-            // This is a adding message
-            Console.WriteLine("Loading... ");
+                    // This tells the user the item was added
+                    Console.WriteLine();
+                    Console.WriteLine($"The food item '{name}' was added successfully.");
+                    Console.WriteLine();
 
-            // Quick animation to close this adding session
-            LoadingAnimation();
+                    // This is a adding message
+                    Console.WriteLine("Closing... ");
 
-            // This clears the console
-            Console.Clear();
+                    // Quick animation to close this adding session
+                    LoadingAnimation();
+
+                    // Marking isValid as true to exit the loop
+                    isValid = true;
+
+                    // This clears the console
+                    Console.Clear();
+
+                } // End of try
+
+                // Catch that handles other exceptions
+                catch (Exception ex)
+                {
+                    // If there is an error, print the message and restart the questionnaire
+                    Console.WriteLine($"Error: {ex.Message}");
+                    Console.WriteLine("Please answer the questions again.");
+
+                } // End of catch
+
+            } // End of while
 
         } // End of if #1
 
@@ -118,19 +162,22 @@ Please select from the menu: ");
         {
             // This asks the user what is the code of the food item and reads the input
             Console.WriteLine();
-            Console.Write("What is the code if the food item? ");
-            string code = MenuInput();
-
-            // This is a adding message
-            Console.WriteLine("Removing... ");
-
-            // Loading animation
-            LoadingAnimation();
+            Console.Write("What is the code of the food item? ");
+            string code = _validator.ValidateNonBlankInput(MenuInput()); // Test the input
 
             // This calls the remove item method
-            _fsms.RemoveFoodItem(code);
+            code = _fsms.RemoveFoodItem(code);
 
-            // This is a adding message
+            // Simple animation and message that item is being removed
+            Console.WriteLine("Removing...");
+            LoadingAnimation();
+
+            // This tells the user that the item was removed correctly
+            Console.WriteLine();
+            Console.WriteLine($"Food item with code '{code}' has been removed.");
+            Console.WriteLine();
+
+            // This is a clossing message
             Console.WriteLine("Closing... ");
 
             // Quick animation to close the removing session
@@ -169,7 +216,7 @@ Please select from the menu: ");
             // This asks the user the name of the file and reads the input
             Console.WriteLine();
             Console.Write("What is the name of the file? ");
-            string fileName = MenuInput();
+            string fileName = _validator.ValidateNonBlankInput(MenuInput());
 
             // This is a adding message
             Console.WriteLine("Saving... ");
@@ -203,6 +250,15 @@ Goodbye, and have a nice day!
 
         // Displays the quick animation
         LoadingAnimation();
+
+        // This builds the body of the email
+        string emailBody = _emailService.GenerateEmailBody(_statusChecker.GetAllExpiringItems());
+
+        // This sends an email with the expired items
+        _emailService.SendEmail("Expiring Items Notification", emailBody);
+
+        // This terminates the program
+        //Environment.Exit(0);
 
         } // End of if #5
 
@@ -280,5 +336,13 @@ Goodbye, and have a nice day!
         } // End of if #2
 
     } // End of method LoadingSequence
+
+    // This method helps in checking the values once
+    public void CheckingSequence()
+    {   
+        // This calls the checking method
+        _statusChecker.CheckExpirationStatus(_fsms.GetAllFoodItems());
+
+    } // End of method CheckingSequence
 
 } // End of class UserInterface

@@ -20,6 +20,8 @@ public abstract class FoodItems
     private string _dateAdded;
     // This variable holds the food item's expiration status
     private bool _isExpired;
+    // This is a list of the unique items to make sure items are not repeated
+    protected List<string> _existingUniqueCodes = new List<string>();
 
     // Constructors
     public FoodItems()
@@ -54,5 +56,21 @@ public abstract class FoodItems
         return foodItem;
 
     } // End of method BuildFoodItem
+
+    // // This method helps in returning the list
+    // public List<string> GetExistingCodes()
+    // {   
+    //     // This returns the list
+    //     return _existingUniqueCodes;
+
+    // } // End of the method GetExistingCodes
+
+    // This method helps in adding the existing codes into the list from a file
+    public void AddExistingUniqueCodes(string code)
+    {   
+        // Adds the code
+        _existingUniqueCodes.Add(code);
+
+    } // End of method AddExistingUniqueCodes
 
 } // End of the parent class FoodItems

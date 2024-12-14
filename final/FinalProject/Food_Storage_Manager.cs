@@ -1,13 +1,16 @@
 // The FoodStorageManager is the class that will handle most of the actions related to food
+using System;
+using System.Text.RegularExpressions;
+
 class FoodStorageManager
 {
     // Attributes
     // This list will hold the information of each item
-    private List<string> _allFoodItems = new List<string>();
+    protected List<string> _allFoodItems = new List<string>();
     // This creates an instance of the DryItems class
-    DryItems dryItems = new DryItems();
+    private DryItems _dryItems = new DryItems();
     // This creates an instance of the FreezerItems class
-    FreezerItems freezerItems = new FreezerItems();
+    private FreezerItems _freezerItems = new FreezerItems();
 
     // Constructors
     public FoodStorageManager()
@@ -31,7 +34,7 @@ class FoodStorageManager
         if (location == "dry")
         {
             // This returns the generated code for the dry item
-            return dryItems.UniqueCodeGenerator();
+            return _dryItems.UniqueCodeGenerator();
 
         } // End of if #1
 
@@ -39,7 +42,7 @@ class FoodStorageManager
         else if (location == "freezer")
         {
             // This returns the generated code for the dry item
-            return freezerItems.UniqueCodeGenerator();
+            return _freezerItems.UniqueCodeGenerator();
 
         } // End of if #2
 
@@ -87,24 +90,42 @@ __________________________________________________");
     } // End of method DisplayAllItems
 
     // This method helps removing an item based on the code
-    public void RemoveFoodItem(string code)
+    public string RemoveFoodItem(string code)
     {   
-        // Check if the storage list contains the item
-        var itemToRemove = _allFoodItems.Find(item => item.Contains(code));
+        // This defines the pattern for valid codes, for example: "F-0000" or "D-0000".
+        string codePattern = @"^[FD]-\d{4}$";
 
-        // If #1: Checks if the item does not exist
-        if (itemToRemove == null)
+        // Loop until the code matches the expected format
+        while (!Regex.IsMatch(code, codePattern))
         {
+            // Inform the user if the code is invalid
+            Console.WriteLine("Invalid code format. Please enter a valid code in the format 'F-0000' or 'D-0000'.");
+            Console.Write("Enter a valid code: ");
+            code = Console.ReadLine();
+
+        } // End of while loop
+
+        // Check if the storage list contains the item
+        var itemToRemove =_allFoodItems.Find(item => item.Contains(code));;
+
+        // do while loop that checks if the item does not exist
+        while (itemToRemove == null)
+        {   
+            // This informs the user of the incorrect input, asks to try again, and reads the input
             Console.WriteLine($"No food item with code '{code}' was found.");
-            return; // Exit the method
+            Console.Write("Please enter a existing code: ");
+            code = Console.ReadLine();
 
-        } // End of if #1
+            // Check again if the storage list contains the item
+            itemToRemove = _allFoodItems.Find(item => item.Contains(code));
 
-        // Remove the item and confirm to the user
+        } // End of do while loop
+
+        // Remove the item
         _allFoodItems.Remove(itemToRemove);
-        Console.WriteLine();
-        Console.WriteLine($"Food item with code '{code}' has been removed.");
-        Console.WriteLine();
+
+        // This returns the code for display
+        return code;
 
     } // End of RemoveFoodItem method
 
@@ -170,7 +191,7 @@ __________________________________________________");
         if (!File.Exists(filePath))
         {   
             // Tells the user that the file with the saved data does not exists
-            Console.WriteLine("The file with the saved data does not exist.");
+            Console.WriteLine("There is no saved data.");
 
             // Returns back into the program
             return;
@@ -232,6 +253,9 @@ __________________________________________________");
                             string name = parts1[1].Split(':')[1].Trim(); // Separates by : and cleans extra spaces
                             string stringStatus = parts1[2].Split(':')[1].Trim(); // Separates by : and cleans extra spaces
 
+                            // This adds the code into a list for later confirmation
+                            _dryItems.AddExistingUniqueCodes(code);
+
                             // Variable that helps converting back into bool values
                             bool status;
 
@@ -283,10 +307,10 @@ __________________________________________________");
 
                 } // End of  While loop
             
-            } // End of Using 
+            } // End of Using
 
             // This helps by telling that the file was added with no issues (debuggin purposes)
-            Console.WriteLine("Food items loaded successfully.");
+            Console.WriteLine("Food data loaded successfully.");
 
         } // End of Try #1
 
@@ -299,5 +323,13 @@ __________________________________________________");
         } // End of Try #1 catch
 
     } // End of method LoadFoodItems
+
+    // This method helps in returning the list
+    public List<string> GetAllFoodItems()
+    {   
+        // This returns the list
+        return _allFoodItems;
+
+    } // End of method GetAllFoodItems
 
 } // End of FoodStorageManager classes

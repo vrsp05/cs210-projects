@@ -1,4 +1,4 @@
-// The child class DryItems will hold the attributes and methods for a dry food item
+// The child class DryItems will hold the attributes and methods for a dry stored food item
 class DryItems : FoodItems
 {
     // Attributes: NONE for now
@@ -16,11 +16,23 @@ class DryItems : FoodItems
         // This creates a new instance for random
         Random random = new Random();
 
-        // This generates a random number of 4 digis
-        int randomCode = random.Next(1000,10000);
+        // This creates the variable for the code
+        string dryCode;
 
-        // This builds the code for dry items
-        string dryCode = $"D-{randomCode}";
+        // Do while loop that generates a unique code
+        do
+        {
+            // Generate a random 4-digit number
+            int randomCode = random.Next(1000, 10000);
+
+            // Build the code for dry stored food item
+            dryCode = $"D-{randomCode}";
+        }
+        // Keep looping until we generate a unique code that doesn't exist in _existingUniqueCodes
+        while (_existingUniqueCodes.Contains(dryCode));
+
+        // This adds the code into the list
+        _existingUniqueCodes.Add(dryCode);
 
         // This returns the code
         return dryCode;
